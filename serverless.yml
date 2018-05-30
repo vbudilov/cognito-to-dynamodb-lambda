@@ -1,0 +1,65 @@
+service: syncService
+
+custom:
+  myRegion: us-east-1
+  myDDB: Users
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+functions:
+  UserOnboardingLambda:
+    handler: cognitoToDDB.handler
+    role: CustomUserOnboardingRole
+    environment:
+      TABLE_NAME: ${self:custom.myDDB}
+      REGION: ${self:custom.myRegion}
+
+resources:
+  Resources:
+    CustomUserOnboardingRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: CustomUserOnboardingRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: CustomCloudWatchLogsPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - 'Fn::Join':
+                      - ':'
+                      -
+                        - 'arn:aws:logs'
+                        - Ref: 'AWS::Region'
+                        - Ref: 'AWS::AccountId'
+                        - 'log-group:/aws/lambda/*:*:*'
+          - PolicyName: CustomUserOnboardingPolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - dynamodb:PutItem
+                  Resource:
+                    - 'Fn::Join':
+                      - ':'
+                      -
+                        - 'arn:aws:dynamodb'
+                        - Ref: 'AWS::Region'
+                        - Ref: 'AWS::AccountId'
+                        - 'table/${self:custom.myDDB}'
