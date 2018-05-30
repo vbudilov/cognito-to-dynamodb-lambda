@@ -2,6 +2,8 @@ var aws = require('aws-sdk');
 var ddb = new aws.DynamoDB({apiVersion: '2012-10-08'});
 
 /**
+ * @author Vladimir Budilov
+ * 
  * Upon Cognito SignUp, a user is added to the DDB table
  *
  * Cognito event:
