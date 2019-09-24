@@ -3,6 +3,7 @@ service: syncService
 custom:
   myRegion: us-east-1
   myDDB: Users
+  myPool: my-userpool-name
 
 provider:
   name: aws
@@ -11,6 +12,11 @@ provider:
 functions:
   UserOnboardingLambda:
     handler: cognitoToDDB.handler
+    events:
+      - cognitoUserPool:
+          pool: ${self:custom.myPool}
+          trigger: PostConfirmation
+          existing: true
     role: CustomUserOnboardingRole
     environment:
       TABLE_NAME: ${self:custom.myDDB}
