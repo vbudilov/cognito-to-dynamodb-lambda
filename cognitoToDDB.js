@@ -1,5 +1,5 @@
-var aws = require('aws-sdk');
-var ddb = new aws.DynamoDB({apiVersion: '2012-10-08'});
+const aws = require('aws-sdk');
+const ddb = new aws.DynamoDB({apiVersion: '2012-10-08'});
 
 /**
  * @author Vladimir Budilov
@@ -41,44 +41,42 @@ var ddb = new aws.DynamoDB({apiVersion: '2012-10-08'});
 exports.handler = async (event, context) => {
     console.log(event);
 
-    let date = new Date();
+    const date = new Date();
 
     const tableName = process.env.TABLE_NAME;
     const region = process.env.REGION;
 
-    console.log("table=" + tableName + " -- region=" + region);
+    console.log(`table=${tableName} -- region=${region}`)
 
-    aws.config.update({region: region});
-
-    // If the required parameters are present, proceed
-    if (event.request.userAttributes.sub) {
-
-        // -- Write data to DDB
-        let ddbParams = {
-            TableName: tableName,
-            Item: {
-                'userId': {S: event.request.userAttributes.sub},
-                'sortKey': {S: "user"},
-                'email': {S: event.request.userAttributes.email},
-                'createdDate': {S: date.toISOString()},
-                'firstLogin': {BOOL: true}
-            }
-        };
-
-        // Call DynamoDB
-        try {
-            ddbResult = await ddb.putItem(ddbParams).promise();
-            console.log("Success");
-        } catch (err) {
-            console.log("Error", err);
-        }
-
-        console.log("Success: Everything executed correctly")
-        context.done(null, event);
-
-    } else {
+    aws.config.update({ region });
+    
+    if (!event.request.userAttributes.sub) {
         // Nothing to do, the user's email ID is unknown
         console.log("Error: Nothing was written to DDB or SQS");
-        context.done(null, event);
+        return context.done(null, event);
     }
+
+    // -- Write data to DDB
+    // If the required parameters are present, proceed
+    const ddbParams = {
+        TableName: tableName,
+        Item: {
+            'userId': {S: event.request.userAttributes.sub},
+            'sortKey': {S: "user"},
+            'email': {S: event.request.userAttributes.email},
+            'createdDate': {S: date.toISOString()},
+            'firstLogin': {BOOL: true}
+        }
+    };
+
+    // Call DynamoDB
+    try {
+        ddbResult = await ddb.putItem(ddbParams).promise();
+        console.log("Success");
+    } catch (err) {
+        console.log("Error", err);
+    }
+
+    console.log("Success: Everything executed correctly")
+    context.done(null, event);
 };
