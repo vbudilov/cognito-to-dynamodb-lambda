@@ -15,16 +15,17 @@ service.
 2. Create your 'Users' DynamoDB table
 3. Create your Cognito User Pool
 4. Setup your CLI credentials
+5. Modify the following 3 variables in the serverless.yml file to fit your needs (the user pool name is the name you gave it during creationg):
+```
+  myRegion: us-east-1
+  myDDB: Users
+  myPool: my-userpool-name
+```
 
 #### Deployment/Setup
 
 Run the following command to deploy the function:
 
 `serverless deploy`
-
-Go to your Cognito User Pool and assign the deployed Lambda 
-function to the "Post confirmation" trigger: 
-
-`General Settings --> Triggers --> Post Confirmation`
 
 You're all set!    
