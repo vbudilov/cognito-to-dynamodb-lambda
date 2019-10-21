@@ -1,4 +1,5 @@
-Author: Vladimir Budilov
+Author: [Vladimir Budilov](https://www.linkedin.com/in/vbudilov/)
+Find me on [Medium](https://medium.com/@budilov)
 
 ### Copy users from Cognito to DynamoDB
 
@@ -21,7 +22,11 @@ service.
   myDDB: Users
   myPool: my-userpool-name
 ```
-
+6. By default the code assumes that your composite keys are 'userId' and 'sortKey'. Make sure you either change the code or change your DDB table (preferrably the former), otherwise this Lambda function will keep on failing. 
+```
+            'userId': {S: event.request.userAttributes.sub},
+            'sortKey': {S: "user"},
+```
 #### Deployment/Setup
 
 Run the following command to deploy the function:
