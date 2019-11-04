@@ -1,5 +1,5 @@
 Author: [Vladimir Budilov](https://www.linkedin.com/in/vbudilov/)
-Find me on [Medium](https://medium.com/@budilov)
+Find me on [Medium](https://medium.com/@budilov) or [LinkedIn](https://www.linkedin.com/in/vbudilov/)
 
 ### Copy users from Cognito to DynamoDB
 
